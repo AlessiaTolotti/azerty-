@@ -39,7 +39,7 @@ class _MyHomePageState extends State<MyHomePage> {
       _counter--;
     });
   }
-
+//
   void _resetCounter() {
     setState(() {
       _counter = 0;
