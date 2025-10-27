@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'dart:math';
 
 void main() {
   runApp(const MyApp());
@@ -11,112 +10,118 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Background Color Changer',
-      home: const ColorChangerPage(),
+      title: 'Greeter App',
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+      ),
+      home: const MyHomePage(title: 'Personal Greeter'),
     );
   }
 }
 
-class ColorChangerPage extends StatefulWidget {
-  const ColorChangerPage({super.key});
+class MyHomePage extends StatefulWidget {
+  const MyHomePage({super.key, required this.title});
+
+  final String title;
 
   @override
-  State<ColorChangerPage> createState() => _ColorChangerPageState();
+  State<MyHomePage> createState() => _MyHomePageState();
 }
 
-class _ColorChangerPageState extends State<ColorChangerPage> {
-  // Stato per il colore di sfondo
-  Color _backgroundColor = Colors.white;
-  bool _isLightMode = true;
+class _MyHomePageState extends State<MyHomePage> {
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _greetingController = TextEditingController();
+  String _displayMessage = '';
 
-  // Cambia colore manualmente
-  void _changeColor(Color newColor) {
+  void _showGreeting() {
     setState(() {
-      _backgroundColor = newColor;
+      final name = _nameController.text;
+      final greeting = _greetingController.text;
+
+      if (name.isEmpty) {
+        _displayMessage = 'inserisci un nome!';
+      } else {
+        if (greeting.isEmpty) {
+          _displayMessage = 'Ciao, $name!';
+        } else {
+          _displayMessage = '$greeting, $name!';
+        }
+      }
     });
   }
 
-  // Toggle Light/Dark mode
-  void _toggleMode(bool value) {
+  void _clearAll() {
     setState(() {
-      _isLightMode = value;
-      _backgroundColor = _isLightMode ? Colors.yellow : Colors.grey[850]!;
+      _nameController.clear();
+      _greetingController.clear();
+      _displayMessage = '';
     });
   }
 
-  // Colore casuale
-  void _randomizeColor() {
-    final random = Random();
-    setState(() {
-      _backgroundColor =
-          Colors.primaries[random.nextInt(Colors.primaries.length)];
-    });
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _greetingController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Background Color Changer'),
-        backgroundColor: Colors.black87,
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        title: Text(widget.title),
       ),
-      body: AnimatedContainer(
-        duration: const Duration(milliseconds: 500),
-        color: _backgroundColor,
-        child: Center(
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              const Text(
-                'Tap a button to change the color!',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            children: [
+              TextField(
+                controller: _nameController,
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: 'inserisci il tuo nome',
+                ),
               ),
-              const SizedBox(height: 30),
-              // Pulsanti Red/Green/Blue
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                    onPressed: () => _changeColor(Colors.red),
-                    child: const Text('Red'),
-                  ),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
-                    onPressed: () => _changeColor(Colors.green),
-                    child: const Text('Green'),
-                  ),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
-                    onPressed: () => _changeColor(Colors.blue),
-                    child: const Text('Blue'),
-                  ),
-                ],
+              SizedBox(height: 16),
+              TextField(
+                controller: _greetingController,
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: 'saluto personalizzato (opzionale)',
+                  hintText: 'es: Yo, Hey, Buongiorno',
+                ),
               ),
-              const SizedBox(height: 20),
-              // Switch Light/Dark
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Text('Dark Mode'),
-                  Switch(
-                    value: _isLightMode,
-                    onChanged: _toggleMode,
-                  ),
-                  const Text('Light Mode'),
-                ],
-              ),
-              const SizedBox(height: 20),
-              // Pulsante Random Color
-              ElevatedButton.icon(
-                onPressed: _randomizeColor,
-                icon: const Icon(Icons.shuffle),
-                label: const Text('Random Color'),
-              ),
+              SizedBox(height: 40),
+              if (_displayMessage.isNotEmpty)
+                Text(
+                  _displayMessage,
+                  style: Theme.of(context).textTheme.headlineMedium,
+                ),
             ],
           ),
         ),
       ),
+      floatingActionButton: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          FloatingActionButton(
+            onPressed: _showGreeting,
+            tooltip: 'Salutami!',
+            child: const Icon(Icons.message),
+          ),
+          const SizedBox(height: 10),
+          FloatingActionButton(
+            onPressed: _clearAll,
+            tooltip: 'Pulisci tutto',
+            child: const Icon(Icons.delete),
+          ),
+        ],
+      ),
     );
   }
 }
+
