@@ -36,13 +36,11 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
+    // form per nome e saluto
     _form = FormGroup({
       "name": FormControl<String>(
         value: "",
-        validators: [
-          Validators.required,
-          Validators.minLength(3),
-        ],
+        validators: [RequiredValidator(), MinLengthValidator(3)],
       ),
       "greeting": FormControl<String>(value: ""),
     });
@@ -55,18 +53,18 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _showGreeting() {
-    if (!_form.valid) {
-      _form.markAllAsTouched(); // mostra i messaggi di errore
-      return;
-    }
+    if (!_form.valid) return;
 
     final name = _form.control("name").value;
     final greeting = _form.control("greeting").value;
 
+    print('nome: $name, saluto: $greeting');
+
     setState(() {
       if (greeting == null || greeting.isEmpty) {
         _displayMessage = 'Ciao, $name!';
-      } else {
+      } 
+      else {
         _displayMessage = '$greeting, $name!';
       }
     });
@@ -77,6 +75,7 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       _displayMessage = '';
     });
+    print('tutto pulito');
   }
 
   @override
@@ -100,10 +99,6 @@ class _MyHomePageState extends State<MyHomePage> {
                     border: OutlineInputBorder(),
                     labelText: 'inserisci il tuo nome',
                   ),
-                  validationMessages: {
-                    ValidationMessage.required: (_) => 'inserisci un nome!',
-                    ValidationMessage.minLength: (_) => 'inserisci almeno 3 caratteri',
-                  },
                 ),
                 const SizedBox(height: 16),
                 ReactiveTextField<String>(
