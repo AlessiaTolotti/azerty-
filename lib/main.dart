@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:reactive_forms/reactive_forms.dart';
 
 void main() {
   runApp(const MyApp());
@@ -29,40 +30,53 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _greetingController = TextEditingController();
+  late final FormGroup _form;
   String _displayMessage = '';
 
-  void _showGreeting() {
-    setState(() {
-      final name = _nameController.text;
-      final greeting = _greetingController.text;
-
-      if (name.isEmpty) {
-        _displayMessage = 'inserisci un nome!';
-      } else {
-        if (greeting.isEmpty) {
-          _displayMessage = 'Ciao, $name!';
-        } else {
-          _displayMessage = '$greeting, $name!';
-        }
-      }
-    });
-  }
-
-  void _clearAll() {
-    setState(() {
-      _nameController.clear();
-      _greetingController.clear();
-      _displayMessage = '';
+  @override
+  void initState() {
+    super.initState();
+    _form = FormGroup({
+      "name": FormControl<String>(
+        value: "",
+        validators: [
+          Validators.required,
+          Validators.minLength(3),
+        ],
+      ),
+      "greeting": FormControl<String>(value: ""),
     });
   }
 
   @override
   void dispose() {
-    _nameController.dispose();
-    _greetingController.dispose();
+    _form.dispose();
     super.dispose();
+  }
+
+  void _showGreeting() {
+    if (!_form.valid) {
+      _form.markAllAsTouched(); // mostra i messaggi di errore
+      return;
+    }
+
+    final name = _form.control("name").value;
+    final greeting = _form.control("greeting").value;
+
+    setState(() {
+      if (greeting == null || greeting.isEmpty) {
+        _displayMessage = 'Ciao, $name!';
+      } else {
+        _displayMessage = '$greeting, $name!';
+      }
+    });
+  }
+
+  void _clearAll() {
+    _form.reset();
+    setState(() {
+      _displayMessage = '';
+    });
   }
 
   @override
@@ -75,32 +89,39 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(20.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              TextField(
-                controller: _nameController,
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: 'inserisci il tuo nome',
+          child: ReactiveForm(
+            formGroup: _form,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ReactiveTextField<String>(
+                  formControlName: "name",
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: 'inserisci il tuo nome',
+                  ),
+                  validationMessages: {
+                    ValidationMessage.required: (_) => 'inserisci un nome!',
+                    ValidationMessage.minLength: (_) => 'inserisci almeno 3 caratteri',
+                  },
                 ),
-              ),
-              SizedBox(height: 16),
-              TextField(
-                controller: _greetingController,
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: 'saluto personalizzato (opzionale)',
-                  hintText: 'es: Yo, Hey, Buongiorno',
+                const SizedBox(height: 16),
+                ReactiveTextField<String>(
+                  formControlName: "greeting",
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: 'saluto personalizzato',
+                    hintText: 'es: Yo, Hey, Buongiorno',
+                  ),
                 ),
-              ),
-              SizedBox(height: 40),
-              if (_displayMessage.isNotEmpty)
-                Text(
-                  _displayMessage,
-                  style: Theme.of(context).textTheme.headlineMedium,
-                ),
-            ],
+                const SizedBox(height: 40),
+                if (_displayMessage.isNotEmpty)
+                  Text(
+                    _displayMessage,
+                    style: Theme.of(context).textTheme.headlineMedium,
+                  ),
+              ],
+            ),
           ),
         ),
       ),
@@ -124,4 +145,3 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 }
-
