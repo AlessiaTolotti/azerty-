@@ -1,102 +1,105 @@
 import 'package:flutter/material.dart';
-import 'dart:math';
+import 'todo.dart';
+import 'add_task_page.dart';
 
-class ColorChangerPage extends StatefulWidget {
-  const ColorChangerPage({super.key});
-  @override
-  State<ColorChangerPage> createState() => _ColorChangerPageState();
+void main() {
+  runApp(const MyApp());
 }
 
-class _ColorChangerPageState extends State<ColorChangerPage> {
-  Color _backgroundColor = Colors.white;
-  bool switchValue = false;
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
   
-  void _changeColor(Color newColor) {
-    setState(() {
-      _backgroundColor = newColor;
-    });
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'TODO App',
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.lightGreen),
+      ),
+      home: const MyHomePage(title: 'TODO'),
+    );
   }
+}
+
+class MyHomePage extends StatefulWidget {
+  const MyHomePage({super.key, required this.title});
+  final String title;
   
+  @override
+  State<MyHomePage> createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
+  final _list = <Todo>[];
+  bool showOnlyCompleted = false;
+
+  List<Todo> get _filtered {
+    if(showOnlyCompleted) {
+      return _list.where((t) => t.isDone).toList();
+    }
+    return _list;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Background Color Changer'),
-        backgroundColor: Colors.black87,
-      ),
-      body: AnimatedContainer(
-        duration: const Duration(milliseconds: 500),
-        color: _backgroundColor,
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              const Text(
-                'Tap a button to change the color!',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 30),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                    onPressed: () {
-                      _changeColor(Colors.red);
-                    },
-                    child: const Text('Red'),
-                  ),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
-                    onPressed: () {
-                      _changeColor(Colors.green);
-                    },
-                    child: const Text('Green'),
-                  ),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
-                    onPressed: () {
-                      _changeColor(Colors.blue);
-                    },
-                    child: const Text('Blue'),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 30),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Text('Light/Dark'),
-                  Switch(
-                    value: switchValue,
-                    onChanged: (value) {
-                      setState(() {
-                        switchValue = value;
-                        if(switchValue == true) {
-                          _backgroundColor = Colors.grey;
-                        } else {
-                          _backgroundColor = Colors.yellow;
-                        }
-                      });
-                    },
-                  ),
-                ],
-              ),
-              const SizedBox(height: 30),
-              ElevatedButton(
-                onPressed: () {
-                  Random r = Random();
-                  int n = r.nextInt(Colors.primaries.length);
-                  setState(() {
-                    _backgroundColor = Colors.primaries[n];
-                  });
-                },
-                child: const Text('Random'),
-              ),
-            ],
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        title: Text(widget.title),
+        actions: [
+          ElevatedButton(
+            onPressed: () {
+              setState(() {
+                showOnlyCompleted = !showOnlyCompleted;
+              });
+            },
+            child: Text(showOnlyCompleted ? 'Mostra tutto' : 'Solo completate'),
           ),
+          const SizedBox(width: 10),
+        ],
+      ),
+      body: Center(
+        child: ListView(
+          children: [
+            if(_filtered.isEmpty)
+              const Center(child: Text("non c'è niente")),
+            for (var i = 0; i < _filtered.length; i++)
+              CheckboxListTile(
+                value: _filtered[i].isDone,
+                title: Text(
+                  _filtered[i].title,
+                  style: TextStyle(
+                    decoration: _filtered[i].isDone ? TextDecoration.lineThrough : null,
+                  ),
+                ),
+                onChanged: (value) {
+                  if(value == null) return;
+                  setState(() {
+                    _filtered[i].isDone = value;
+                  });
+                
+                },
+              ),
+          ],
         ),
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _goToAddTask,
+        child: const Icon(Icons.add),
+      ),
     );
+  }
+
+  void _goToAddTask() async {
+    final result = await Navigator.push<Todo>(
+      context,
+      MaterialPageRoute(builder: (context) => const AddTaskPage()),
+    );
+
+    if(result != null) {
+      setState(() {
+        _list.add(result);
+      });
+    }
   }
 }
