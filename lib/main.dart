@@ -23,6 +23,7 @@ class MyApp extends StatelessWidget {
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
+  
   final String title;
   
   @override
@@ -31,14 +32,6 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   final _list = <Todo>[];
-  bool showOnlyCompleted = false;
-
-  List<Todo> get _filtered {
-    if(showOnlyCompleted) {
-      return _list.where((t) => t.isDone).toList();
-    }
-    return _list;
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -47,37 +40,49 @@ class _MyHomePageState extends State<MyHomePage> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
         actions: [
-          ElevatedButton(
+          ElevatedButton.icon(
+            icon: const Icon(Icons.refresh),
             onPressed: () {
               setState(() {
-                showOnlyCompleted = !showOnlyCompleted;
+                _list.clear();
               });
             },
-            child: Text(showOnlyCompleted ? 'Mostra tutto' : 'Solo completate'),
+            label: const Text('Reset All'),
           ),
-          const SizedBox(width: 10),
+          const SizedBox(width: 8),
+          ElevatedButton.icon(
+            icon: const Icon(Icons.invert_colors),
+            onPressed: () {
+              setState(() {
+                for (var i = 0; i < _list.length; i++) {
+                  _list[i].isDone = !_list[i].isDone;
+                }
+              });
+            },
+            label: const Text('Invert All'),
+          ),
+          const SizedBox(width: 20),
         ],
       ),
       body: Center(
         child: ListView(
           children: [
-            if(_filtered.isEmpty)
-              const Center(child: Text("non c'è niente")),
-            for (var i = 0; i < _filtered.length; i++)
+            if (_list.isEmpty)
+              const Text("non c'è niente"),
+            for (final (i, todo) in _list.indexed)
               CheckboxListTile(
-                value: _filtered[i].isDone,
+                value: todo.isDone,
                 title: Text(
-                  _filtered[i].title,
+                  todo.title,
                   style: TextStyle(
-                    decoration: _filtered[i].isDone ? TextDecoration.lineThrough : null,
+                    decoration: todo.isDone ? TextDecoration.lineThrough : null,
                   ),
                 ),
                 onChanged: (value) {
-                  if(value == null) return;
+                  if (value == null) return;
                   setState(() {
-                    _filtered[i].isDone = value;
+                    _list[i].isDone = value;
                   });
-                
                 },
               ),
           ],
@@ -90,16 +95,16 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  void _goToAddTask() async {
+  Future<void> _goToAddTask() async {
     final result = await Navigator.push<Todo>(
       context,
       MaterialPageRoute(builder: (context) => const AddTaskPage()),
     );
 
-    if(result != null) {
-      setState(() {
-        _list.add(result);
-      });
-    }
+    if (result == null) return;
+    
+    setState(() {
+      _list.add(result);
+    });
   }
 }
