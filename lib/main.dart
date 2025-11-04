@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'todo.dart';
-import 'add_task_page.dart';
+import 'ricetta.dart';
+import 'add_ricetta_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -8,30 +8,30 @@ void main() {
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-  
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'TODO App',
+      title: 'Ricette App',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.lightGreen),
       ),
-      home: const MyHomePage(title: 'TODO'),
+      home: const RicetteHome(title: 'Ricette'),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-  
+class RicetteHome extends StatefulWidget {
+  const RicetteHome({super.key, required this.title});
+
   final String title;
-  
+
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<RicetteHome> createState() => _RicetteHomeState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  final _list = <Todo>[];
+class _RicetteHomeState extends State<RicetteHome> {
+  final List<Ricetta> _ricette = [];
 
   @override
   Widget build(BuildContext context) {
@@ -39,72 +39,39 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
-        actions: [
-          ElevatedButton.icon(
-            icon: const Icon(Icons.refresh),
-            onPressed: () {
-              setState(() {
-                _list.clear();
-              });
-            },
-            label: const Text('Reset All'),
-          ),
-          const SizedBox(width: 8),
-          ElevatedButton.icon(
-            icon: const Icon(Icons.invert_colors),
-            onPressed: () {
-              setState(() {
-                for (var i = 0; i < _list.length; i++) {
-                  _list[i].isDone = !_list[i].isDone;
-                }
-              });
-            },
-            label: const Text('Invert All'),
-          ),
-          const SizedBox(width: 20),
-        ],
       ),
       body: Center(
         child: ListView(
           children: [
-            if (_list.isEmpty)
-              const Text("non c'è niente"),
-            for (final (i, todo) in _list.indexed)
-              CheckboxListTile(
-                value: todo.isDone,
-                title: Text(
-                  todo.title,
-                  style: TextStyle(
-                    decoration: todo.isDone ? TextDecoration.lineThrough : null,
-                  ),
-                ),
-                onChanged: (value) {
-                  if (value == null) return;
-                  setState(() {
-                    _list[i].isDone = value;
-                  });
-                },
+            if (_ricette.isEmpty)
+              const Padding(
+                padding: EdgeInsets.all(16.0),
+                child: Text("qui non c'è niente"),
               ),
+            for (final ricetta in _ricette)
+              ListTile(
+                title: Text(ricetta.nome),
+              )
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _goToAddTask,
         child: const Icon(Icons.add),
+        onPressed: _vaiAggiungiRicetta,
       ),
     );
   }
 
-  Future<void> _goToAddTask() async {
-    final result = await Navigator.push<Todo>(
+  Future<void> _vaiAggiungiRicetta() async {
+    final result = await Navigator.push<Ricetta>(
       context,
-      MaterialPageRoute(builder: (context) => const AddTaskPage()),
+      MaterialPageRoute(builder: (context) => AddRicettaPage(onAggiungi: (Ricetta p1) {  },)),
     );
 
     if (result == null) return;
-    
+
     setState(() {
-      _list.add(result);
+      _ricette.add(result);
     });
   }
 }
