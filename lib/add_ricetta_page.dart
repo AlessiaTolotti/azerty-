@@ -20,8 +20,9 @@ class _AddRicettaPageState extends State<AddRicettaPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: const Color.fromARGB(255, 103, 176, 39),
+        backgroundColor: const Color.fromARGB(255, 112, 154, 75),
         title: Text("Aggiungi Ricetta"),
+        foregroundColor:  const Color.fromARGB(255, 255, 255, 255),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -47,7 +48,9 @@ class _AddRicettaPageState extends State<AddRicettaPage> {
             SizedBox(height: 20),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color.fromARGB(255, 103, 176, 39),
+                backgroundColor: const Color.fromARGB(255, 112, 154, 75),
+                foregroundColor:  const Color.fromARGB(255, 255, 255, 255),
+                
               ),
               onPressed: () {
                 final nuovaRicetta = Ricetta(
