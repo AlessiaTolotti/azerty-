@@ -20,7 +20,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
         value: "",
         validators: [RequiredValidator(), MinLengthValidator(3)],
       ),
-    });
+    }); 
   }
 
   @override
