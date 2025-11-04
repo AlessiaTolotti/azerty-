@@ -4,7 +4,8 @@ import 'ricetta.dart';
 class AddRicettaPage extends StatefulWidget {
   final Function(Ricetta) onAggiungi;
 
-  AddRicettaPage({required this.onAggiungi});
+  const AddRicettaPage({super.key, required this.onAggiungi});
+
 
   @override
   _AddRicettaPageState createState() => _AddRicettaPageState();
@@ -31,12 +32,12 @@ class _AddRicettaPageState extends State<AddRicettaPage> {
               decoration: InputDecoration(labelText: "Nome ricetta"),
             ),
             SizedBox(
-        height: 150, // cambia l'altezza come vuoi 👀
-        child: TextField(
-        controller: descrizioneController,
-        maxLines: null,
-        expands: true,
-        decoration: InputDecoration(labelText: "Descrizione ricetta"),
+              height: 150,
+              child: TextField(
+              controller: descrizioneController,
+              maxLines: null,
+              expands: true,
+              decoration: InputDecoration(labelText: "Descrizione ricetta"),
       ),
             ),
             TextField(
