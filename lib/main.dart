@@ -1,21 +1,42 @@
-// TODO: define your model
-class Contact {   }
+import 'package:flutter/material.dart';
 
-class ContactListScreen extends State<...> {
-  // TODO init with dummy data
-  final List<Contact> contacts = [ ... ];
+void main() {
+  runApp(const MyApp());
+}
 
-  Future<void> _makePhoneCall(String phoneNumber) async {
-    // TODO ...
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'App Skeleton',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: const HomePage(),
+    );
   }
+}
+
+class HomePage extends StatelessWidget {
+  const HomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Contact List'),
+        title: const Text('Home Page'),
       ),
-      body: ListView( ... ),
+      body: const Center(
+        child: Text('Benvenuto! Qui metteremo le ricette.'),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          // TODO: aggiungere funzionalità
+        },
+        child: const Icon(Icons.add),
+      ),
     );
   }
 }
