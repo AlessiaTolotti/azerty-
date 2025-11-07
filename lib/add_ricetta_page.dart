@@ -8,10 +8,10 @@ class AddRicettaPage extends StatefulWidget {
 
 
   @override
-  _AddRicettaPageState createState() => _AddRicettaPageState();
+  AddRicettaPageState createState() => AddRicettaPageState();
 }
 
-class _AddRicettaPageState extends State<AddRicettaPage> {
+class AddRicettaPageState extends State<AddRicettaPage> {
   final TextEditingController nomeController = TextEditingController();
   final TextEditingController descrizioneController = TextEditingController();
   final TextEditingController urlController = TextEditingController();
@@ -20,7 +20,7 @@ class _AddRicettaPageState extends State<AddRicettaPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: const Color.fromARGB(255, 112, 154, 75),
+        backgroundColor: const Color.fromARGB(255, 255, 133, 35),
         title: Text("Aggiungi Ricetta"),
         foregroundColor:  const Color.fromARGB(255, 255, 255, 255),
       ),
@@ -48,7 +48,7 @@ class _AddRicettaPageState extends State<AddRicettaPage> {
             SizedBox(height: 20),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color.fromARGB(255, 112, 154, 75),
+                backgroundColor: const Color.fromARGB(255, 255, 133, 35),
                 foregroundColor:  const Color.fromARGB(255, 255, 255, 255),
                 
               ),
