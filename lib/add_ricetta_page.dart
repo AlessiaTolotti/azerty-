@@ -1,72 +1,101 @@
-import 'package:flutter/material.dart';
-import 'ricetta.dart';
+import "package:flutter/material.dart";
+import "ricetta.dart"; 
 
 class AddRicettaPage extends StatefulWidget {
-  final Function(Ricetta) onAggiungi;
-
-  const AddRicettaPage({super.key, required this.onAggiungi});
-
+  const AddRicettaPage({super.key});
 
   @override
-  AddRicettaPageState createState() => AddRicettaPageState();
+  State<AddRicettaPage> createState() => _AddRicettaPageState();
 }
 
-class AddRicettaPageState extends State<AddRicettaPage> {
-  final TextEditingController nomeController = TextEditingController();
-  final TextEditingController descrizioneController = TextEditingController();
-  final TextEditingController urlController = TextEditingController();
+class _AddRicettaPageState extends State<AddRicettaPage> {
+  final _nomeController = TextEditingController();
+  final _descrizioneController = TextEditingController();
+  final _urlController = TextEditingController();
+  final _ingredientiController = TextEditingController();
+  final _stepsController = TextEditingController();
 
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: const Color.fromARGB(255, 255, 133, 35),
-        title: Text("Aggiungi Ricetta"),
-        foregroundColor:  const Color.fromARGB(255, 255, 255, 255),
+        backgroundColor: Colors.orange, 
+        title: const Text("Aggiungi Ricetta"),
+        foregroundColor: Colors.white,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            TextField(
-              controller: nomeController,
-              decoration: InputDecoration(labelText: "Nome ricetta"),
-            ),
-            SizedBox(
-              height: 150,
-              child: TextField(
-              controller: descrizioneController,
-              maxLines: null,
-              expands: true,
-              decoration: InputDecoration(labelText: "Descrizione ricetta"),
-      ),
-            ),
-            TextField(
-              controller: urlController,
-              decoration: InputDecoration(labelText: "URL ricetta (opzionale)"),
-            ),
-            SizedBox(height: 20),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color.fromARGB(255, 255, 133, 35),
-                foregroundColor:  const Color.fromARGB(255, 255, 255, 255),
-                
+     
+      body: SingleChildScrollView( 
+        child: Padding( 
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              TextField(
+                controller: _nomeController,
+                decoration: const InputDecoration(labelText: "Nome ricetta"),
               ),
-              onPressed: () {
-                final nuovaRicetta = Ricetta(
-                  nome: nomeController.text,
-                  descrizione: descrizioneController.text,
-                  url: urlController.text,
-                );
-
-                widget.onAggiungi(nuovaRicetta);
-                 Navigator.pop(context, nuovaRicetta); 
-              },
-              child: Text("Salva"),
-            )
-          ],
+              TextField(
+                controller: _ingredientiController,
+                decoration: const InputDecoration(
+                  labelText: "Ingredienti (separati da virgola)",
+                ),
+              ),
+              
+              SizedBox( 
+                height: 150, 
+                child: TextField(
+                  controller: _stepsController,
+                  decoration: const InputDecoration(
+                    labelText: "Procedimento (separati da virgola)",
+                  ),
+                  maxLines: null,
+                  expands: true,
+                ),
+              ),
+              TextField(
+                controller: _descrizioneController,
+                decoration: const InputDecoration(labelText: "Descrizione ricetta"),
+              ),
+              TextField(
+                controller: _urlController,
+                decoration: const InputDecoration(
+                  labelText: "URL ricetta (opzionale)",
+                ),
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.orange,
+                  foregroundColor: Colors.white,
+                ),
+                onPressed: _salva,
+                child: const Text("Salva"),
+              ),
+            ],
+          ),
         ),
       ),
     );
+  }
+
+  void _salva() {
+    final ricetta = Ricetta(
+      nome: _nomeController.text,
+      descrizione: _descrizioneController.text,
+      url: _urlController.text,
+      ingredienti: _ingredientiController.text
+          .split(",") 
+          .map((e) => e.trim()) 
+          .where((e) => e.isNotEmpty)
+          .toList(),
+      steps: _stepsController.text
+          .split(",")
+          .map((e) => e.trim())
+          .where((e) => e.isNotEmpty)
+          .toList(),
+    );
+
+    print("salvo ricetta: ${ricetta.nome}");
+    Navigator.pop(context, ricetta);
   }
 }

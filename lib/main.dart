@@ -1,7 +1,7 @@
-import 'package:flutter/material.dart';
-import 'ricetta.dart';
-import 'add_ricetta_page.dart';
-import 'package:url_launcher/url_launcher.dart';
+import "package:flutter/material.dart";
+import "ricetta.dart"; 
+import "add_ricetta_page.dart";
+import "package:url_launcher/url_launcher.dart"; 
 
 void main() {
   runApp(const MyApp());
@@ -13,20 +13,19 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Ricette App',
+      title: "Ricette App",
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color.fromARGB(255, 225, 133, 35),
+          seedColor: Colors.orange,
         ),
       ),
-      home: const RicetteHome(title: 'Ricette'),
+      home: const RicetteHome(title: "Le mie Ricette"),
     );
   }
 }
 
 class RicetteHome extends StatefulWidget {
-  const RicetteHome({super.key, required this.title});
-
+  const RicetteHome({required this.title, super.key}); 
   final String title;
 
   @override
@@ -34,7 +33,22 @@ class RicetteHome extends StatefulWidget {
 }
 
 class _RicetteHomeState extends State<RicetteHome> {
-  final List<Ricetta> _ricette = [];
+  final _list = <Ricetta>[ 
+    Ricetta(
+      nome: "Pasta al Pesto",
+      descrizione: "Un classico della cucina ligure.",
+      ingredienti: const ["Pasta", "Pesto", "Parmigiano"], 
+      steps: const ["Cuoci la pasta", "Aggiungi il pesto", "Mescola e servi"],
+      url: "https://www.example.com/pasta-al-pesto",
+    ),
+    Ricetta(
+      nome: "Insalata Caprese",
+      descrizione: "Fresca e veloce da preparare.",
+      ingredienti: const ["Pomodori", "Mozzarella", "Basilico", "Olio"],
+      steps: const ["Taglia i pomodori", "Aggiungi mozzarella e basilico", "Condisci con olio"],
+      url: "https://www.example.com/insalata-caprese",
+    ),
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -42,76 +56,33 @@ class _RicetteHomeState extends State<RicetteHome> {
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
+        // CORREZIONE: Rimosso 'const' dalla lista actions
+        actions: [ 
+          // Azioni pulite e vuote
+        ],
       ),
-      body: Column(
+      body: Column( 
         children: [
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: ElevatedButton(
-              onPressed: _vaiAggiungiRicetta,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color.fromARGB(255, 255, 133, 35),
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(15),
-                ),
-              ),
-              child: const Text(
-                'Aggiungi ricetta',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.normal,
-                ),
-              ),
+              onPressed: _aggiungiRicetta,
+              child: const Text("Aggiungi ricetta"),
             ),
           ),
-          Expanded(
-            child: ListView(
-              children: [
-                if (_ricette.isEmpty)
-                  const Padding(
-                    padding: EdgeInsets.all(16.0),
-                    child: Text("Ancora nessuna ricetta."),
-                  ),
-                for (final ricetta in _ricette)
-                  ListTile(
-                    title: Text(ricetta.nome),
-                    onTap: () {
-                      showDialog(
-                        context: context,
-                        builder: (context) {
-                          return AlertDialog(
-                            title: Text(ricetta.nome),
-                            content: SingleChildScrollView(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(ricetta.descrizione),
-                                  const SizedBox(height: 20),
-                                  if (ricetta.url.isNotEmpty)
-                                    ElevatedButton(
-                                      onPressed: () {
-                                        Navigator.pop(context);
-                                        _openUrl(context, ricetta.url);
-                                      },
-                                      child: const Text("Apri link ricetta"),
-                                    ),
-                                ],
-                              ),
-                            ),
-                            actions: [
-                              TextButton(
-                                onPressed: () => Navigator.pop(context),
-                                child: const Text("Chiudi"),
-                              ),
-                            ],
-                          );
-                        },
-                      );
-                    },
-                  ),
-              ],
+          Expanded( 
+            child: ListView.builder(
+              itemCount: _list.length,
+              itemBuilder: (context, index) {
+                final ricetta = _list[index];
+                return ListTile(
+                  title: Text(ricetta.nome),
+                  subtitle: Text(ricetta.descrizione),
+                  onTap: () {
+                    _mostraDettagli(ricetta);
+                  },
+                );
+              },
             ),
           ),
         ],
@@ -119,30 +90,72 @@ class _RicetteHomeState extends State<RicetteHome> {
     );
   }
 
-  Future<void> _vaiAggiungiRicetta() async {
-    final nuovaRicetta = await Navigator.push<Ricetta>(
+  Future<void> _aggiungiRicetta() async {
+    final result = await Navigator.push<Ricetta>(
       context,
       MaterialPageRoute(
-        builder: (context) => AddRicettaPage(onAggiungi: (Ricetta p1) {}),
+        builder: (context) => const AddRicettaPage(),
       ),
     );
 
-    if (nuovaRicetta == null) return;
+    if (result == null) return; 
 
-    setState(() {
-      _ricette.add(nuovaRicetta);
-    });
+    setState(() => _list.add(result)); 
+    print("ricetta aggiunta: ${result.nome}");
   }
 
-  Future<void> _openUrl(BuildContext context, String url) async {
+  void _mostraDettagli(Ricetta ricetta) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(ricetta.nome),
+          content: Column( 
+            mainAxisSize: MainAxisSize.min, 
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(ricetta.descrizione),
+              const SizedBox(height: 10),
+              const Text(
+                "Ingredienti:",
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              for (final ingrediente in ricetta.ingredienti) 
+                Text("• $ingrediente"),
+              const SizedBox(height: 10),
+              const Text(
+                "Passaggi:",
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              for (final step in ricetta.steps) 
+                Text("• $step"),
+            ],
+          ),
+          actions: [
+            if (ricetta.url.isNotEmpty)
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  _apriUrl(ricetta.url);
+                },
+                child: const Text("Apri link"),
+              ),
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text("Chiudi"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _apriUrl(String url) async {
     final uri = Uri.parse(url);
 
     if (await canLaunchUrl(uri)) {
-      await launchUrl(uri);
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Impossibile aprire il link.")),
-      );
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+
     }
   }
 }

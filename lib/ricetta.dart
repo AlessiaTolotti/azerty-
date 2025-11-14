@@ -1,11 +1,15 @@
 class Ricetta {
-  final String nome;
-  final String descrizione;
-  final String url;
+  String nome;
+  String descrizione;
+  String url;
+  List<String> ingredienti;
+  List<String> steps;
 
   Ricetta({
     required this.nome,
     required this.descrizione,
     required this.url,
+    this.ingredienti = const [],
+    this.steps = const [],
   });
 }
