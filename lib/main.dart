@@ -56,10 +56,8 @@ class _RicetteHomeState extends State<RicetteHome> {
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
-        // CORREZIONE: Rimosso 'const' dalla lista actions
-        actions: [ 
-          // Azioni pulite e vuote
-        ],
+        
+        actions: [],
       ),
       body: Column( 
         children: [
