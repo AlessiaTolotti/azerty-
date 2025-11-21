@@ -39,14 +39,14 @@ class _RicetteHomeState extends State<RicetteHome> {
       descrizione: "Un classico della cucina ligure.",
       ingredienti: const ["Pasta", "Pesto", "Parmigiano"], 
       steps: const ["Cuoci la pasta", "Aggiungi il pesto", "Mescola e servi"],
-      url: "https://www.example.com/pasta-al-pesto",
+      url: "https://ricette.giallozafferano.it/Bavette-al-pesto.html",
     ),
     Ricetta(
       nome: "Insalata Caprese",
       descrizione: "Fresca e veloce da preparare.",
       ingredienti: const ["Pomodori", "Mozzarella", "Basilico", "Olio"],
       steps: const ["Taglia i pomodori", "Aggiungi mozzarella e basilico", "Condisci con olio"],
-      url: "https://www.example.com/insalata-caprese",
+      url: "https://blog.giallozafferano.it/lebistro/insalata-caprese/",
     ),
   ];
 
@@ -154,6 +154,12 @@ class _RicetteHomeState extends State<RicetteHome> {
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
 
+    } else { //messaggio di errore
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Impossibile aprire il link: $url")),
+      );
+      
     }
+
   }
 }

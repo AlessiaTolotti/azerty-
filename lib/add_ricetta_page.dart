@@ -41,6 +41,8 @@ class _AddRicettaPageState extends State<AddRicettaPage> {
                 ),
               ),
               
+              // TextField espandibile per procedimento lungo
+              // trovato su Stack Overflow: https://stackoverflow.com/questions/51205333
               SizedBox( 
                 height: 150, 
                 child: TextField(
@@ -85,13 +87,9 @@ class _AddRicettaPageState extends State<AddRicettaPage> {
       url: _urlController.text,
       ingredienti: _ingredientiController.text
           .split(",") 
-          .map((e) => e.trim()) 
-          .where((e) => e.isNotEmpty)
           .toList(),
       steps: _stepsController.text
           .split(",")
-          .map((e) => e.trim())
-          .where((e) => e.isNotEmpty)
           .toList(),
     );
 
