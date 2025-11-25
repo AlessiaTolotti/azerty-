@@ -46,22 +46,21 @@ class _ContattiListScreenState extends State<ContattiListScreen> {
     ),
   ];
 
-  Future<void> _makePhoneCall(String phoneNumber, BuildContext currentContext) async {
-    final Uri launchUri = Uri(
-      scheme: 'tel',
-      path: phoneNumber,
-    );
-    
-    final launched = await canLaunchUrl(launchUri);
-    
-    if (launched) {
-      await launchUrl(launchUri);
-    } else {
-      ScaffoldMessenger.of(currentContext).showSnackBar(
-        SnackBar(content: Text('Impossibile chiamare: $phoneNumber')),
-      );
-    }
+ Future<bool> _makePhoneCall(String phoneNumber) async {
+  final Uri launchUri = Uri(
+    scheme: 'tel',
+    path: phoneNumber,
+  );
+  
+  final launched = await canLaunchUrl(launchUri);
+  
+  if (launched) {
+    await launchUrl(launchUri);
+    return true; 
+  } else {
+    return false; 
   }
+}
 
   void _shareContact(Persona persona) {
     Share.share(persona.testoCondivisione);
@@ -92,6 +91,38 @@ class _ContattiListScreenState extends State<ContattiListScreen> {
 
   @override
   Widget build(BuildContext context) {
+    List<Widget> contactListTiles = [];
+    
+    for (int i = 0; i < _contacts.length; i++) {
+      final persona = _contacts[i];
+      
+      contactListTiles.add(
+        ListTile(
+          title: Text(persona.nomeCompleto),
+          subtitle: Text(persona.telefoni.join(', ')),
+          
+          onTap: () {
+            _showContactDetails(persona, i);
+          },
+          
+          trailing: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (persona.telefoni.isNotEmpty)
+                IconButton(
+                  icon: const Icon(Icons.phone, color: Colors.lightBlue),
+                  onPressed: () => _makePhoneCall(persona.telefoni.first),
+                ),
+              IconButton(
+                icon: const Icon(Icons.share),
+                onPressed: () => _shareContact(persona),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+    
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
@@ -111,34 +142,11 @@ class _ContattiListScreenState extends State<ContattiListScreen> {
             if (_contacts.isEmpty)
               const Text("Nessun contatto presente"),
             
-            for (final (i, persona) in _contacts.indexed)
-              ListTile(
-                title: Text(persona.nomeCompleto),
-                subtitle: Text(persona.telefoni.join(', ')),
-                
-                onTap: () {
-                  _showContactDetails(persona, i);
-                },
-                
-                trailing: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    if (persona.telefoni.isNotEmpty)
-                      IconButton(
-                        icon: const Icon(Icons.phone, color: Colors.lightBlue),
-                        onPressed: () => _makePhoneCall(persona.telefoni.first, context),
-                      ),
-                    IconButton(
-                      icon: const Icon(Icons.share),
-                      onPressed: () => _shareContact(persona),
-                    ),
-                  ],
-                ),
-              ),
+            // riprendo la lista creata con il for di prima come scaffold in react?
+            ...contactListTiles,
           ],
         ),
       ),
- 
     );
   }
 
@@ -164,7 +172,7 @@ class _ContattiListScreenState extends State<ContattiListScreen> {
                         icon: const Icon(Icons.call, color: Colors.lightBlue),
                         onPressed: () {
                           Navigator.pop(context);
-                          _makePhoneCall(number, context);
+                          _makePhoneCall(number);
                         },
                       ),
                     ],
