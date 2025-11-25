@@ -24,13 +24,12 @@ class _EditContactPageState extends State<EditContactPage> {
     _telefoni = widget.contact?.telefoni.toList() ?? [''];
   }
 
-//questo metodo (_removePhoneField) lo abbiamo cercato
-//non so se va bene (ho provato a farlo con i (ciclo for) ma non andava)
+
   
-  void _removePhoneField(int index) {
+  void _removePhoneField(int i) {
     setState(() {
       if (_telefoni.length > 1) {
-        _telefoni.removeAt(index);
+        _telefoni.removeAt(i);
       }
     });
   }
@@ -69,8 +68,8 @@ class _EditContactPageState extends State<EditContactPage> {
   Widget build(BuildContext context) {
     
     List<Widget> campiTelefono = [];
-    for (int index = 0; index < _telefoni.length; index++) {
-      final number = _telefoni[index]; 
+    for (int i = 0; i < _telefoni.length; i++) {
+      final number = _telefoni[i]; 
       
       campiTelefono.add(
         Padding(
@@ -81,12 +80,12 @@ class _EditContactPageState extends State<EditContactPage> {
                 child: TextFormField(
                   initialValue: number,
                   decoration: InputDecoration(
-                    labelText: 'Telefono ${index + 1}', 
+                    labelText: 'Telefono ${i + 1}', 
                   ),
                   keyboardType: TextInputType.phone,
                   onSaved: (value) {
                     if (value != null) {
-                      _telefoni[index] = value; 
+                      _telefoni[i] = value; 
                     }
                   },
                 ),
@@ -94,7 +93,7 @@ class _EditContactPageState extends State<EditContactPage> {
               if (_telefoni.length > 1)
                 IconButton(
                   icon: const Icon(Icons.remove_circle_outline, color: Colors.red),
-                  onPressed: () => _removePhoneField(index),
+                  onPressed: () => _removePhoneField(i),
                 ),
             ],
           ),

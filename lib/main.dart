@@ -67,19 +67,19 @@ class _ContattiListScreenState extends State<ContattiListScreen> {
     Share.share(persona.testoCondivisione);
   }
 
-  void _editContact(Persona? result, int? index) {
+  void _editContact(Persona? result, int? i) {
     if (result == null) return;
     
     setState(() {
-      if (index == null) {
+      if (i == null) {
         _contacts.add(result);
       } else {
-        _contacts[index] = result;
+        _contacts[i] = result;
       }
     });
   }
   
-  Future<void> _navigate(Persona? contact, int? index) async {
+  Future<void> _navigate(Persona? contact, int? i) async {
     final result = await Navigator.push<Persona>(
       context,
       MaterialPageRoute(
@@ -87,7 +87,7 @@ class _ContattiListScreenState extends State<ContattiListScreen> {
       ),
     );
 
-    _editContact(result, index);
+    _editContact(result, i);
   }
 
   @override
@@ -142,7 +142,7 @@ class _ContattiListScreenState extends State<ContattiListScreen> {
     );
   }
 
-  void _showContactDetails(Persona persona, int index) {
+  void _showContactDetails(Persona persona, int i) {
     showDialog(
       context: context,
       builder: (context) {
@@ -176,7 +176,7 @@ class _ContattiListScreenState extends State<ContattiListScreen> {
             TextButton(
               onPressed: () {
                 Navigator.pop(context);
-                _navigate(persona, index);
+                _navigate(persona, i);
               },
               child: const Text('Modifica'),
             ),
