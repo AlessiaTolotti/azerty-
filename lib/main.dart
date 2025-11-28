@@ -3,7 +3,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:share_plus/share_plus.dart';
 import 'persona.dart';
 import 'edit_contact_page.dart';
-
+//COMMENTO PER COMMIT
 void main() {
   runApp(const ContattiApp());
 }
