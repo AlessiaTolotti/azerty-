@@ -1,201 +1,92 @@
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
-import 'package:share_plus/share_plus.dart';
-import 'persona.dart';
-import 'edit_contact_page.dart';
-//COMMENTO PER COMMIT
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'product.dart';
+import 'cartScreen.dart';
+
 void main() {
-  runApp(const ContattiApp());
+  runApp(const ProviderScope(child: ShoppingApp()));
 }
 
-class ContattiApp extends StatelessWidget {
-  const ContattiApp({super.key});
+final _router = GoRouter(
+  initialLocation: '/products',
+  routes: [
+    GoRoute(
+      path: '/products',
+      builder: (context, state) => const ProductsScreen(),
+    ),
+    GoRoute(
+      path: '/cart',
+      builder: (context, state) => const CartScreen(),
+    ),
+  ],
+);
+
+class ShoppingApp extends StatelessWidget {
+  const ShoppingApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Elenco Contatti',
+    return MaterialApp.router(
+      title: 'Shopping App',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.lightBlue),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+        useMaterial3: true,
       ),
-      home: const ContattiListScreen(title: 'Lista Contatti'),
+      routerConfig: _router,
     );
   }
 }
-//ciao
 
-class ContattiListScreen extends StatefulWidget {
-  const ContattiListScreen({super.key, required this.title});
-  
-  final String title;
+class ProductsScreen extends ConsumerWidget {
+  const ProductsScreen({super.key});
 
   @override
-  State<ContattiListScreen> createState() => _ContattiListScreenState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final products = ref.watch(productsProvider);
+    final cartItems = ref.watch(cartProvider);
 
-class _ContattiListScreenState extends State<ContattiListScreen> {
-  final _contacts = <Persona>[
-    Persona(
-      nome: "Mario",
-      cognome: "Rossi",
-      telefoni: ["+393331112223"],
-    ),
-    Persona(
-      nome: "Luigi",
-      cognome: "Bianchi",
-      telefoni: ["+39111222333", "+39333222111"],
-    ),
-  ];
-
- Future<bool> _makePhoneCall(String phoneNumber) async {
-  final Uri launchUri = Uri(
-    scheme: 'tel',
-    path: phoneNumber,
-  );
-  
-  final launched = await canLaunchUrl(launchUri);
-  
-  if (launched) {
-    await launchUrl(launchUri);
-    return true; 
-  } else {
-    return false; 
-  }
-}
-
-  void _shareContact(Persona persona) {
-    Share.share(persona.testoCondivisione);
-  }
-
-  void _editContact(Persona? result, int? i) {
-    if (result == null) return;
-    
-    setState(() {
-      if (i == null) {
-        _contacts.add(result);
-      } else {
-        _contacts[i] = result;
-      }
-    });
-  }
-  
-  Future<void> _navigate(Persona? contact, int? i) async {
-    final result = await Navigator.push<Persona>(
-      context,
-      MaterialPageRoute(
-        builder: (context) => EditContactPage(contact: contact),
-      ),
-    );
-
-    _editContact(result, i);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    List<Widget> contactListTiles = [];
-    
-    for (int i = 0; i < _contacts.length; i++) {
-      final persona = _contacts[i];
-      
-      contactListTiles.add(
-        ListTile(
-          title: Text(persona.nomeCompleto),
-          subtitle: Text(persona.telefoni.join(', ')),
-          
-          onTap: () {
-            _showContactDetails(persona, i);
-          },
-          
-          trailing: Row(
-            mainAxisSize: MainAxisSize.min,
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Products'),
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        actions: [
+          Row(
             children: [
-              if (persona.telefoni.isNotEmpty)
-                IconButton(
-                  icon: const Icon(Icons.phone, color: Colors.lightBlue),
-                  onPressed: () => _makePhoneCall(persona.telefoni.first),
-                ),
               IconButton(
-                icon: const Icon(Icons.share),
-                onPressed: () => _shareContact(persona),
+                icon: const Icon(Icons.shopping_cart),
+                onPressed: () {
+                  context.push('/cart');
+                },
+              ),
+              Padding(
+                padding: const EdgeInsets.only(right: 16.0),
+                child: Text(
+                  '${cartItems.length}',
+                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                ),
               ),
             ],
           ),
-        ),
-      );
-    }
-    
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
-        actions: [
-          ElevatedButton.icon(
-            icon: const Icon(Icons.add, color: Color.fromARGB(255, 78, 112, 149)), 
-            onPressed: () => _navigate(null, null),
-            label: const Text('Aggiungi'),
-          ),
-          const SizedBox(width: 8), 
         ],
       ),
-      body: Center(
-        child: ListView(
-          children: [
-            if (_contacts.isEmpty)
-              const Text("Nessun contatto presente"),
-            
-            // riprendo la lista creata con il for di prima come scaffold in react?
-            ...contactListTiles,
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _showContactDetails(Persona persona, int i) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text(persona.nomeCompleto),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text("Numeri di telefono:"),
-              for (var number in persona.telefoni)
-                Padding(
-                  padding: const EdgeInsets.only(top: 8.0),
-                  child: Row(
-                    children: [
-                      Text(number),
-                      const Spacer(),
-                      IconButton(
-                        icon: const Icon(Icons.call, color: Colors.lightBlue),
-                        onPressed: () {
-                          Navigator.pop(context);
-                          _makePhoneCall(number);
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-            ],
-          ),
-          actions: [
-            TextButton(
+      body: ListView.builder(
+        itemCount: products.length,
+        itemBuilder: (context, index) {
+          final product = products[index];
+          return ListTile(
+            title: Text(product.name),
+            subtitle: Text('\$ ${product.price}'),
+            trailing: IconButton(
+              icon: const Icon(Icons.add),
               onPressed: () {
-                Navigator.pop(context);
-                _navigate(persona, i);
+                ref.read(cartProvider.notifier).addItem(product);
               },
-              child: const Text('Modifica'),
             ),
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Chiudi'),
-            ),
-          ],
-        );
-      },
+          );
+        },
+      ),
     );
   }
 }
