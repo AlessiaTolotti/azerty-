@@ -77,7 +77,7 @@ class ProductsScreen extends ConsumerWidget {
           final product = products[index];
           return ListTile(
             title: Text(product.name),
-            subtitle: Text('\$ ${product.price}'),
+            subtitle: Text('€ ${product.price}'),
             trailing: IconButton(
               icon: const Icon(Icons.add),
               onPressed: () {

@@ -28,7 +28,7 @@ class CartScreen extends ConsumerWidget {
                 final item = cartItems[index];
                 return ListTile(
                   title: Text(item.product.name),
-                  subtitle: Text('\$ ${item.product.price} x ${item.quantity}'),
+                  subtitle: Text('€ ${item.product.price} x ${item.quantity}'),
                   trailing: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -61,7 +61,7 @@ class CartScreen extends ConsumerWidget {
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
                 ),
                 Text(
-                  "\$ ${total.toStringAsFixed(2)}",
+                  "€ ${total.toStringAsFixed(2)}",
                   style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
                 ),
               ],
