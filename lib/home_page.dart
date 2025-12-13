@@ -12,7 +12,9 @@ class HomePage extends ConsumerWidget {
     final isLoggedIn = user != null;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Home Page')),
+      appBar: AppBar(
+        title: const Text('Home Page'),
+      ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -24,19 +26,25 @@ class HomePage extends ConsumerWidget {
             const SizedBox(height: 30),
             if (!isLoggedIn)
               ElevatedButton(
-                onPressed: () => context.push('/login'),
+                onPressed: () {
+                  context.push('/login');
+                },
                 child: const Text('Vai al Login'),
               )
             else
               Column(
                 children: [
                   ElevatedButton(
-                    onPressed: () => context.push('/profile'),
+                    onPressed: () {
+                      context.push('/profile');
+                    },
                     child: const Text('Modifica Profilo'),
                   ),
                   const SizedBox(height: 10),
                   OutlinedButton(
-                    onPressed: () => ref.read(authNotifierProvider.notifier).logout(),
+                    onPressed: () {
+                      ref.read(authNotifierProvider.notifier).logout();
+                    },
                     child: const Text('Logout'),
                   ),
                 ],

@@ -9,21 +9,30 @@ part 'router.g.dart';
 
 @riverpod
 GoRouter router(Ref ref) {
-  return GoRouter(
+  final router = GoRouter(
     initialLocation: '/home',
     routes: [
       GoRoute(
         path: '/home',
-        builder: (context, state) => const HomePage(),
+        builder: (context, state) {
+          return const HomePage();
+        },
       ),
       GoRoute(
         path: '/login',
-        builder: (context, state) => const LoginPage(),
+        builder: (context, state) {
+          return const LoginPage();
+        },
       ),
       GoRoute(
         path: '/profile',
-        builder: (context, state) => const ProfilePage(),
+        builder: (context, state) {
+          return const ProfilePage();
+        },
       ),
     ],
   );
+  ref.onDispose(router.dispose);
+
+  return router;
 }
